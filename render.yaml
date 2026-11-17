@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: libretv-live
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /live-agg/
+    envVars:
+      - key: PASSWORD
+        sync: false
