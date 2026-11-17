@@ -1,0 +1,170 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=e9]:
+      - heading "Navigation Menu" [level=2] [ref=e10]
+      - generic [ref=e11]:
+        - link "Homepage" [ref=e14] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e17]:
+          - navigation "Global" [ref=e18]:
+            - list [ref=e19]:
+              - listitem [ref=e20]:
+                - button "Products" [ref=e22] [cursor=pointer]
+              - listitem [ref=e25]:
+                - button "Developers" [ref=e27] [cursor=pointer]
+              - listitem [ref=e30]:
+                - button "Businesses" [ref=e32] [cursor=pointer]
+              - listitem [ref=e35]:
+                - button "Resources" [ref=e37] [cursor=pointer]
+              - listitem [ref=e40]:
+                - link "Pricing" [ref=e41] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=e42]:
+            - button "Search or jump to, type / to search" [ref=e44] [cursor=pointer]:
+              - generic [ref=e47]:
+                - generic [ref=e48]: Search
+                - generic [aria-hidden] [ref=e49]: /
+            - generic [ref=e50]:
+              - link "Sign in" [ref=e52] [cursor=pointer]:
+                - /url: /login?return_to=https%3A%2F%2Fgithub.com%2FLucaslxd%2Flibretv%2Factions%2Fruns%2F44050847357
+              - link "Sign up" [ref=e55] [cursor=pointer]:
+                - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Factions%2Fworkflow_runs%2Fshow&source=header-repo&source_repo=Lucaslxd%2Flibretv
+              - button "Appearance settings" [ref=e58] [cursor=pointer]
+  - main [ref=e65]:
+    - generic [ref=e66]:
+      - generic "Global navigation menu" [ref=e69]:
+        - navigation "Breadcrumbs" [ref=e72]:
+          - list [ref=e73]:
+            - listitem [ref=e74]:
+              - link "Lucaslxd" [ref=e75] [cursor=pointer]:
+                - /url: /Lucaslxd
+            - listitem [ref=e77]:
+              - link "libretv" [ref=e78] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv
+        - heading "Repository navigation" [level=2] [ref=e81]
+        - navigation "Repository" [ref=e82]:
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - link "Code" [ref=e85] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv
+            - listitem [ref=e90]:
+              - link "Issues" [ref=e91] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv/issues
+            - listitem [ref=e97]:
+              - link "Pull requests" [ref=e98] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv/pulls
+            - listitem [ref=e103]:
+              - link "Actions" [ref=e104] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv/actions
+            - listitem [ref=e109]:
+              - link "Projects" [ref=e110] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv/projects
+            - listitem [ref=e115]:
+              - link "Security and quality" [ref=e116] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv/security
+            - listitem [ref=e121]:
+              - link "Insights" [ref=e122] [cursor=pointer]:
+                - /url: /Lucaslxd/libretv/pulse
+      - generic [ref=e131]:
+        - generic [ref=e134]:
+          - link "Build iOS IPA (unsigned)" [ref=e137] [cursor=pointer]:
+            - /url: /Lucaslxd/libretv/actions/workflows/ios-ipa.yml
+          - generic [ref=e141]:
+            - generic [ref=e142]:
+              - img "cancelled:" [ref=e146]
+              - 'heading "LibreTV 直播聚合 + Capacitor 移动端外壳（iOS 云构建） #1" [level=1] [ref=e148]'
+            - link "Sign in to view logs" [ref=e152] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2FLucaslxd%2Flibretv%2Factions%2Fruns%2F44050847357
+        - generic [ref=e153]:
+          - navigation "Workflow run" [ref=e159]:
+            - list [ref=e160]:
+              - listitem [ref=e161]:
+                - link "Summary" [ref=e162] [cursor=pointer]:
+                  - /url: /Lucaslxd/libretv/actions/runs/44050847357
+              - generic [ref=e165]:
+                - heading "All jobs" [level=4] [ref=e166]
+                - button "Filter by job status" [ref=e167] [cursor=pointer]
+              - listitem [aria-hidden] [ref=e170]
+              - listitem:
+                - list
+              - listitem [aria-hidden] [ref=e171]
+              - listitem [ref=e172]:
+                - heading "Run details" [level=3] [ref=e174]
+                - list "Run details" [ref=e175]:
+                  - listitem [ref=e176]:
+                    - link "Usage" [ref=e177] [cursor=pointer]:
+                      - /url: /Lucaslxd/libretv/actions/runs/44050847357/usage
+                  - listitem [ref=e180]:
+                    - link "Workflow file" [ref=e181] [cursor=pointer]:
+                      - /url: /Lucaslxd/libretv/actions/runs/44050847357/workflow
+                  - listitem [ref=e184]:
+                    - link "Lockfile" [ref=e185] [cursor=pointer]:
+                      - /url: /Lucaslxd/libretv/actions/runs/44050847357/lockfile
+          - generic [ref=e189]:
+            - region "Workflow run summary" [ref=e190]:
+              - generic [ref=e191]:
+                - generic [ref=e192]:
+                  - generic [ref=e193]: Triggered via push November 17, 2026 08:55now
+                  - generic [ref=e194]:
+                    - link [ref=e195] [cursor=pointer]:
+                      - /url: /Lucaslxd
+                      - img "@Lucaslxd" [ref=e196]
+                      - text: Lucaslxd
+                    - generic [ref=e197]:
+                      - generic [ref=e198]: pushed
+                      - link "e1c2ed2" [ref=e199] [cursor=pointer]:
+                        - /url: /Lucaslxd/libretv/commit/e1c2ed2ea510fb08a483acc13bc075fe38d4d349
+                    - link "main" [ref=e202] [cursor=pointer]:
+                      - /url: /Lucaslxd/libretv/tree/refs/heads/main
+                - generic [ref=e203]:
+                  - generic [ref=e204]: Status
+                  - text: Cancelled
+                - generic [ref=e205]:
+                  - generic [ref=e206]: Total duration
+                  - link "2s" [ref=e207] [cursor=pointer]:
+                    - /url: /Lucaslxd/libretv/actions/runs/44050847357/usage
+                - generic [ref=e208]:
+                  - generic [ref=e209]: Artifacts
+                  - text: –
+            - region "Workflow run graph" [ref=e210]:
+              - generic [ref=e212]:
+                - generic [ref=e214]:
+                  - heading [level=2] [ref=e215]:
+                    - link "ios-ipa.yml" [ref=e216] [cursor=pointer]:
+                      - /url: /Lucaslxd/libretv/actions/runs/44050847357/workflow
+                  - generic [ref=e217]: "on: push"
+                - generic [ref=e219]:
+                  - 'link "cancelled: build 0s" [ref=e224] [cursor=pointer]':
+                    - /url: /Lucaslxd/libretv/actions/runs/44050847357/job/133927969923
+                    - generic [ref=e226]:
+                      - img "cancelled:" [ref=e228]
+                      - generic [ref=e230]: build
+                      - generic [ref=e232]: 0s
+                  - generic [aria-hidden] [ref=e233]:
+                    - paragraph [ref=e234]: Oh hello! Nice to see you.
+                    - paragraph [ref=e235]:
+                      - text: Made with ❤️ by
+                      - link [ref=e236] [cursor=pointer]:
+                        - /url: https://actions.github.io/humans.txt
+                        - text: humans.txt
+                - generic [ref=e237]:
+                  - button "Fit to window" [disabled] [ref=e238]
+                  - generic [ref=e239]:
+                    - button "Zoom out" [disabled] [ref=e241]
+                    - button "Zoom in" [disabled] [ref=e243]
+            - region "Annotations" [ref=e244]:
+              - generic [ref=e245]:
+                - generic [ref=e247]:
+                  - heading "Annotations" [level=2] [ref=e248]
+                  - generic [ref=e249]: 1 error
+                - table [ref=e250]:
+                  - rowgroup [ref=e251]:
+                    - row [ref=e252]:
+                      - cell "build The configuration 'macos-14-arm64-us-default' is not supported" [ref=e253]:
+                        - generic [ref=e258]:
+                          - link [ref=e259] [cursor=pointer]:
+                            - /url: /Lucaslxd/libretv/actions/runs/44050847357/job/133927969923
+                            - strong [ref=e260]: build
+                          - generic [ref=e261]: The configuration 'macos-14-arm64-us-default' is not supported
