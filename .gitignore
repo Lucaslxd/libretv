@@ -1,0 +1,24 @@
+# 依赖
+node_modules/
+
+# 构建产物
+app/.next/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/ios/App/Pods/
+mobile/ios/App/build/
+Payload/
+*.ipa
+
+# 运行时 / 日志
+logs/
+runtime/
+*.log
+
+# 本地数据（M3U 源、部署产物）
+app/live-agg/data/
+
+# 系统
+.DS_Store
+Thumbs.db

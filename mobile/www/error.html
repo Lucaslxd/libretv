@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>无法连接</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #06090f;
+        color: #e8edf7;
+        font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      }
+      .box {
+        height: 100%;
+        padding: 24px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: 17px;
+      }
+      p {
+        margin: 0;
+        max-width: 320px;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #8b97b0;
+      }
+      input {
+        width: min(320px, 86vw);
+        padding: 12px 14px;
+        border: 1px solid #24304a;
+        border-radius: 10px;
+        background: #0d1220;
+        color: #e8edf7;
+        font-size: 13px;
+        outline: none;
+      }
+      button {
+        padding: 11px 26px;
+        border: 0;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(135deg, #7c5cff, #22d3ee);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>无法连接服务器</h1>
+      <p>请确认手机与服务器在同一网络，或填写正确的服务器地址后重试。</p>
+      <input id="addr" type="text" placeholder="http://192.168.1.10:8080/" autocomplete="off" />
+      <button id="go" type="button">连接</button>
+    </div>
+    <script>
+      document.getElementById('go').addEventListener('click', function () {
+        var v = document.getElementById('addr').value.trim()
+        if (!v) return
+        if (!/^https?:\/\//i.test(v)) v = 'http://' + v
+        location.replace(v)
+      })
+    </script>
+  </body>
+</html>

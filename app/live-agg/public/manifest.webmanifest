@@ -1,0 +1,32 @@
+{
+  "name": "LibreTV 直播",
+  "short_name": "LibreTV",
+  "description": "直播聚合：多平台直播与 M3U 频道",
+  "lang": "zh-CN",
+  "start_url": "/live-agg/",
+  "scope": "/live-agg/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#06090f",
+  "theme_color": "#06090f",
+  "icons": [
+    {
+      "src": "/live-agg/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/live-agg/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/live-agg/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>直播聚合 · LibreTV</title>
+    <link rel="manifest" href="/live-agg/manifest.webmanifest" />
+    <meta name="theme-color" content="#06090f" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LibreTV" />
+    <link rel="apple-touch-icon" href="/live-agg/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/live-agg/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot"></span>
+        <h1>直播聚合</h1>
+        <span class="badge">LIVE</span>
+      </div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="platform">平台直播</button>
+        <button class="tab" data-tab="m3u">M3U 源</button>
+      </nav>
+      <div class="spacer"></div>
+      <a class="home" href="/">返回首页</a>
+    </header>
+
+    <main>
+      <section id="tab-platform" class="panel active">
+        <div class="platforms" id="platforms"></div>
+
+        <form id="search-form" class="searchbox">
+          <input id="search-input" type="search" placeholder="搜索主播 / 直播间 / 关键词" autocomplete="off" />
+          <button type="submit">搜索</button>
+        </form>
+
+        <form id="link-form" class="linkbox">
+          <input id="link-input" type="text" placeholder="粘贴直播间链接或房间号，例如 https://live.bilibili.com/6" autocomplete="off" />
+          <button type="submit">直连播放</button>
+        </form>
+
+        <div id="cat-tabs" class="cat-tabs hidden"></div>
+        <div id="area-grid" class="area-grid hidden"></div>
+
+        <div id="search-hint" class="hint"></div>
+        <div id="room-grid" class="grid"></div>
+        <div id="room-more" class="more"></div>
+      </section>
+
+      <section id="tab-m3u" class="panel">
+        <div class="m3u-add">
+          <input id="m3u-name" placeholder="源名称（可选）" />
+          <input id="m3u-url" placeholder="M3U / M3U8 地址，例如 https://iptv-org.github.io/iptv/countries/cn.m3u" />
+          <input id="m3u-ref" placeholder="Referer（可选）" />
+          <button id="m3u-add-btn">添加直播源</button>
+        </div>
+
+        <div id="m3u-sources" class="sources"></div>
+
+        <div class="m3u-toolbar">
+          <input id="m3u-filter" placeholder="搜索频道 / 分组 / tvg-id" />
+          <div id="m3u-groups" class="groups"></div>
+          <span id="m3u-count" class="count"></span>
+        </div>
+
+        <div id="channel-grid" class="grid channels"></div>
+      </section>
+    </main>
+
+    <div id="player" class="player hidden">
+      <div class="player-box">
+        <div class="player-head">
+          <div class="ptitle" id="player-title">播放中</div>
+          <div class="pactions">
+            <select id="quality-select" class="hidden" title="清晰度"></select>
+            <select id="line-select" class="hidden" title="线路"></select>
+            <button id="player-refresh" title="刷新">↻</button>
+            <button id="player-open" title="在新页面播放">⤢</button>
+            <button id="player-close" title="关闭">✕</button>
+          </div>
+        </div>
+        <div class="video-wrap">
+          <video id="video" controls playsinline></video>
+          <div id="player-status" class="player-status">正在加载…</div>
+        </div>
+        <div class="player-meta" id="player-meta"></div>
+      </div>
+    </div>
+
+    <div id="login" class="login hidden">
+      <form id="login-form" class="login-box">
+        <h2>需要登录</h2>
+        <p>请输入 LibreTV 访问密码</p>
+        <input id="login-password" type="password" placeholder="密码" autocomplete="current-password" />
+        <button type="submit">进入</button>
+        <div id="login-error" class="login-error"></div>
+      </form>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/live-agg/vendor/hls.min.js"></script>
+    <script src="/live-agg/vendor/mpegts.min.js"></script>
+    <script src="/live-agg/app.js"></script>
+  </body>
+</html>
