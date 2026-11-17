@@ -1,0 +1,14 @@
+node_modules
+/app/node_modules
+/app/.next
+/app/public
+mobile
+logs
+runtime
+data
+.git
+.github
+.playwright-cli
+*.log
+*.ipa
+Payload
