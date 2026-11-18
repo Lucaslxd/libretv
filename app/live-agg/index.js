@@ -11,7 +11,13 @@ const m3u = require('./m3u')
 const store = require('./store')
 
 const PUBLIC_DIR = path.join(__dirname, 'public')
-const LIVE_API_BASE = (process.env.LIVE_API_BASE || 'https://live-api.zrfme.com').replace(/\/+$/, '')
+/* 支持多个上游，逗号分隔，失败自动切换；单个失败后熔断 60 秒 */
+const LIVE_API_BASES = String(
+  process.env.LIVE_API_BASES || process.env.LIVE_API_BASE || 'https://live-api.zrfme.com'
+)
+  .split(',')
+  .map((s) => s.trim().replace(/\/+$/, ''))
+  .filter(Boolean)
 const PASSWORD = process.env.PASSWORD || ''
 const AUTH_COOKIE = 'la_auth'
 const UA = m3u.DEFAULT_UA
@@ -153,43 +159,67 @@ function serveStatic(res, relPath) {
 
 /* ---------------- upstream live-api ---------------- */
 
-async function forwardApi(res, apiPath, params) {
-  let target
-  try {
-    target = new URL(LIVE_API_BASE + apiPath)
-  } catch {
-    return sendJson(res, 500, { error: 'LIVE_API_BASE 配置无效' })
-  }
-  Object.keys(params || {}).forEach((k) => {
-    const v = params[k]
-    if (v !== undefined && v !== null && v !== '') target.searchParams.set(k, v)
-  })
+const upstreamDownUntil = new Map()
 
-  const ctrl = new AbortController()
-  const timer = setTimeout(() => ctrl.abort(), 20000)
-  try {
-    const r = await fetch(target, {
-      signal: ctrl.signal,
-      headers: {
-        'User-Agent': UA,
-        Referer: 'https://live.zrfme.com/',
-        Origin: 'https://live.zrfme.com',
-        Accept: 'application/json',
-      },
+async function forwardApi(res, apiPath, params) {
+  let lastReason = '没有可用的上游地址'
+
+  for (const base of LIVE_API_BASES) {
+    if ((upstreamDownUntil.get(base) || 0) > Date.now()) {
+      lastReason = '上游暂时不可用（熔断中）'
+      continue
+    }
+
+    let target
+    try {
+      target = new URL(base + apiPath)
+    } catch {
+      lastReason = '上游地址配置无效'
+      continue
+    }
+    Object.keys(params || {}).forEach((k) => {
+      const v = params[k]
+      if (v !== undefined && v !== null && v !== '') target.searchParams.set(k, v)
     })
-    const text = await r.text()
-    res.writeHead(r.status, {
-      'Content-Type': r.headers.get('content-type') || 'application/json; charset=utf-8',
-      'Content-Length': Buffer.byteLength(text),
-      'Cache-Control': 'no-store',
-    })
-    res.end(text)
-  } catch (e) {
-    const reason = e && e.name === 'AbortError' ? '请求超时' : (e && e.cause && e.cause.code) || (e && e.message) || '网络错误'
-    sendJson(res, 502, { error: '上游接口请求失败：' + reason })
-  } finally {
-    clearTimeout(timer)
+
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), 10000)
+    try {
+      const r = await fetch(target, {
+        signal: ctrl.signal,
+        headers: {
+          'User-Agent': UA,
+          Referer: 'https://live.zrfme.com/',
+          Origin: 'https://live.zrfme.com',
+          Accept: 'application/json',
+        },
+      })
+      const text = await r.text()
+
+      if (r.status >= 500) {
+        upstreamDownUntil.set(base, Date.now() + 60000)
+        lastReason = '上游返回 ' + r.status
+        continue
+      }
+
+      upstreamDownUntil.delete(base)
+      res.writeHead(r.status, {
+        'Content-Type': r.headers.get('content-type') || 'application/json; charset=utf-8',
+        'Content-Length': Buffer.byteLength(text),
+        'Cache-Control': 'no-store',
+      })
+      res.end(text)
+      return
+    } catch (e) {
+      upstreamDownUntil.set(base, Date.now() + 60000)
+      lastReason =
+        e && e.name === 'AbortError' ? '请求超时' : (e && e.cause && e.cause.code) || (e && e.message) || '网络错误'
+    } finally {
+      clearTimeout(timer)
+    }
   }
+
+  sendJson(res, 502, { error: '上游接口请求失败：' + lastReason })
 }
 
 /* ---------------- M3U ---------------- */
@@ -451,7 +481,8 @@ async function handle(req, res) {
 
   try {
     if (rest === '/api/platforms') return sendJson(res, 200, { platforms: PLATFORMS })
-    if (rest === '/api/health') return sendJson(res, 200, { ok: true, apiBase: LIVE_API_BASE })
+    if (rest === '/api/health')
+      return sendJson(res, 200, { ok: true, apiBase: LIVE_API_BASES[0] || '', apiBases: LIVE_API_BASES })
     if (rest === '/api/search') {
       return forwardApi(res, '/api/search', { site: q.get('site'), kw: q.get('kw'), page: q.get('page') || '1' })
     }

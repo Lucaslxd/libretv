@@ -1,0 +1,17 @@
+{
+  "name": "ltbridge-proxy",
+  "version": "1.0.1",
+  "description": "LibreTV 本地回环代理：为 iOS 原生 HLS 播放注入 Referer / User-Agent",
+  "license": "MIT",
+  "main": "index.js",
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "files": [
+    "ios/",
+    "LtbridgeProxy.podspec",
+    "index.js"
+  ]
+}

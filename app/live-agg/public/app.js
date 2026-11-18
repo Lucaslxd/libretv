@@ -65,6 +65,7 @@
     currentUrls: [],
     lastStream: null,
     playerHref: '',
+    upstreamDown: false,
   }
 
   var hls = null
@@ -93,7 +94,7 @@
       var v = params[k]
       if (v !== undefined && v !== null && v !== '') p.set(k, v)
     })
-    return '/live-agg/player.html?' + p.toString()
+    return 'player.html?' + p.toString()
   }
 
   function roomPlayerUrl(site, roomId, title) {
@@ -146,15 +147,12 @@
   }
 
   async function api(path, opts) {
-    var res = await fetch('/live-agg' + path, opts || {})
-    var ct = res.headers.get('content-type') || ''
-    var data = ct.indexOf('application/json') >= 0 ? await res.json() : await res.text()
-    if (!res.ok) {
-      var err = new Error((data && data.error) || 'HTTP ' + res.status)
-      err.status = res.status
-      throw err
+    try {
+      return await window.LTBridge.api(path, opts)
+    } catch (e) {
+      if (e.status === 401) els.login.classList.remove('hidden')
+      throw e
     }
-    return data
   }
 
   /* ---------- auth ---------- */
@@ -432,7 +430,9 @@
         : '当前平台暂无推荐直播间'
       renderMore()
     } catch (e) {
-      els.searchHint.textContent = '加载推荐失败：' + e.message
+      state.upstreamDown = true
+      els.searchHint.textContent = '平台接口不可用：' + e.message
+      maybeSwitchToM3U()
     }
   }
 
@@ -731,11 +731,7 @@
     destroyPlayer()
     setStatus('正在加载…')
 
-    var p = new URLSearchParams({ url: url })
-    if (opts.site) p.set('site', opts.site)
-    if (opts.ref) p.set('ref', opts.ref)
-    if (opts.ua) p.set('ua', opts.ua)
-    var src = '/live-agg/api/stream?' + p.toString()
+    var src = window.LTBridge.streamUrl({ url: url, ref: opts.ref, ua: opts.ua }, opts.site)
 
     var f = String(format || '').toLowerCase()
     var isHls = f === 'm3u8' || f === 'hls' || /\.m3u8(?:$|\?)/i.test(url)
@@ -743,7 +739,14 @@
 
     if (isHls) {
       if (window.Hls && window.Hls.isSupported()) {
-        hls = new window.Hls({ lowLatencyMode: true, backBufferLength: 30, maxBufferLength: 30 })
+        hls = new window.Hls({
+          lowLatencyMode: true,
+          backBufferLength: 30,
+          maxBufferLength: 30,
+          xhrSetup: function (xhr) {
+            window.LTBridge.applyStreamHeaders(xhr, { ref: opts.ref, ua: opts.ua })
+          },
+        })
         hls.loadSource(src)
         hls.attachMedia(els.video)
         hls.on(window.Hls.Events.MANIFEST_PARSED, function () {
@@ -771,7 +774,12 @@
         var flvSrc = new URL(src, location.href).href
         flvPlayer = window.mpegts.createPlayer(
           { type: 'flv', isLive: true, url: flvSrc },
-          { enableWorker: true, lazyLoad: false, stashInitialSize: 128 }
+          {
+            /* App 内 worker 用不了原生 HTTP（会被 CORS 拦截），关闭 worker */
+            enableWorker: !(window.LTBridge && window.LTBridge.native),
+            lazyLoad: false,
+            stashInitialSize: 128,
+          }
         )
         flvPlayer.attachMediaElement(els.video)
         flvPlayer.load()
@@ -802,11 +810,19 @@
 
   /* ---------- M3U ---------- */
 
+  /* 平台聚合接口不可用时，自动落到本地可解析的 M3U 源 */
+  function maybeSwitchToM3U() {
+    if (!state.upstreamDown || state.activeSourceId) return
+    if (!state.sources.length) return
+    switchTab('m3u')
+    toast('平台接口不可用，已切换到 M3U 直播源')
+  }
+
   async function loadSources() {
     try {
-      var data = await api('/api/m3u/sources')
-      state.sources = data.sources || []
+      state.sources = await window.LTBridge.m3u.list()
       renderSources()
+      maybeSwitchToM3U()
     } catch (e) {
       if (e.status !== 401) toast('加载直播源失败：' + e.message)
     }
@@ -852,10 +868,10 @@
       return
     }
     try {
-      await api('/api/m3u/sources', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: els.m3uName.value.trim(), url: url, referer: els.m3uRef.value.trim() }),
+      await window.LTBridge.m3u.add({
+        name: els.m3uName.value.trim(),
+        url: url,
+        referer: els.m3uRef.value.trim(),
       })
       els.m3uName.value = ''
       els.m3uUrl.value = ''
@@ -869,7 +885,7 @@
 
   async function removeSource(id) {
     try {
-      await api('/api/m3u/sources?id=' + encodeURIComponent(id), { method: 'DELETE' })
+      await window.LTBridge.m3u.remove(id)
       if (state.activeSourceId === id) {
         state.activeSourceId = ''
         state.channels = []
@@ -892,8 +908,7 @@
     els.channelGrid.innerHTML = ''
     els.m3uCount.textContent = '加载中…'
     try {
-      var data = await api('/api/m3u/channels?source=' + encodeURIComponent(id))
-      state.channels = data.channels || []
+      state.channels = await window.LTBridge.m3u.channels(id)
       renderGroups()
       renderChannels()
     } catch (e) {

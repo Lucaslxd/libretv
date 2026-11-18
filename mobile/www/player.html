@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>直播播放 · LibreTV</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#06090f" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LibreTV" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="stylesheet" href="player.css" />
+  </head>
+  <body>
+    <header class="pbar">
+      <a class="back" href="./">← 返回列表</a>
+      <div class="ptitle" id="title">直播播放</div>
+      <div class="pact">
+        <select id="quality" class="hidden" title="清晰度"></select>
+        <select id="line" class="hidden" title="线路"></select>
+        <button id="refresh" type="button">刷新</button>
+        <button id="fullscreen" type="button">全屏</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <video id="video" controls playsinline autoplay></video>
+
+      <div class="overlay hidden" id="overlay">
+        <button id="bigplay" type="button" title="播放">▶</button>
+      </div>
+
+      <div class="status" id="status">正在加载…</div>
+      <div class="hintbar" id="hintbar"></div>
+    </main>
+
+    <div class="login hidden" id="login">
+      <form class="login-box" id="login-form">
+        <h2>需要登录</h2>
+        <p>请输入 LibreTV 访问密码</p>
+        <input id="login-password" type="password" placeholder="密码" autocomplete="current-password" />
+        <button type="submit">进入</button>
+        <div class="login-error" id="login-error"></div>
+      </form>
+    </div>
+
+    <script src="vendor/hls.min.js"></script>
+    <script src="vendor/mpegts.min.js"></script>
+    <script src="vendor/capacitor.js"></script>
+    <script src="bridge.js"></script>
+    <script src="player.js"></script>
+  </body>
+</html>

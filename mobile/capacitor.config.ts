@@ -1,13 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 /**
- * 服务器地址：
- * - Android 模拟器默认用 10.0.2.2（指向宿主机 localhost）
- * - 真机改成电脑局域网 IP，如 http://192.168.1.10:8080/
- * - 线上部署就填你的域名，如 https://tv.example.com/
- * 可以通过环境变量覆盖：APP_SERVER_URL=https://tv.example.com/ npm run sync
+ * App 内置界面 + 直连上游 API，不需要任何服务器。
+ * Bundle ID 可通过环境变量覆盖：APP_ID=com.example.app npm run sync
  */
-const serverUrl = process.env.APP_SERVER_URL || 'http://10.0.2.2:8080/'
 const appId = process.env.APP_ID || 'com.libretv.app'
 
 const config: CapacitorConfig = {
@@ -15,17 +11,15 @@ const config: CapacitorConfig = {
   appName: 'LibreTV',
   webDir: 'www',
   backgroundColor: '#06090f',
-  server: {
-    url: serverUrl,
-    cleartext: true,
-    errorPath: 'error.html',
-    allowNavigation: ['*'],
-  },
   android: {
     allowMixedContent: true,
     webContentsDebuggingEnabled: true,
   },
   plugins: {
+    // 关键：启用原生 HTTP，绕过 CORS，并可自定义 Referer
+    CapacitorHttp: {
+      enabled: true,
+    },
     SplashScreen: {
       launchAutoHide: true,
       launchShowDuration: 300,

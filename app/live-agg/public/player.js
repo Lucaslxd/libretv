@@ -78,16 +78,12 @@
   }
 
   async function api(path, opts) {
-    var res = await fetch('/live-agg' + path, opts || {})
-    var ct = res.headers.get('content-type') || ''
-    var data = ct.indexOf('application/json') >= 0 ? await res.json() : await res.text()
-    if (!res.ok) {
-      if (res.status === 401) els.login.classList.remove('hidden')
-      var err = new Error((data && data.error) || 'HTTP ' + res.status)
-      err.status = res.status
-      throw err
+    try {
+      return await window.LTBridge.api(path, opts)
+    } catch (e) {
+      if (e.status === 401) els.login.classList.remove('hidden')
+      throw e
     }
-    return data
   }
 
   /* ---------- auth ---------- */
@@ -158,11 +154,7 @@
       if (mySeq === seq && !S.playing) handleFail('加载超时')
     }, 18000)
 
-    var p = new URLSearchParams({ url: c.url })
-    if (c.site) p.set('site', c.site)
-    if (c.ref) p.set('ref', c.ref)
-    if (c.ua) p.set('ua', c.ua)
-    var src = '/live-agg/api/stream?' + p.toString()
+    var src = window.LTBridge.streamUrl({ url: c.url, ref: c.ref, ua: c.ua }, c.site)
 
     var f = String(c.format || '').toLowerCase()
     var isHls = f === 'm3u8' || f === 'hls' || /\.m3u8(?:$|\?)/i.test(c.url)
@@ -210,7 +202,14 @@
 
     if (isHls) {
       if (window.Hls && window.Hls.isSupported()) {
-        hls = new window.Hls({ lowLatencyMode: true, backBufferLength: 30, maxBufferLength: 30 })
+        hls = new window.Hls({
+          lowLatencyMode: true,
+          backBufferLength: 30,
+          maxBufferLength: 30,
+          xhrSetup: function (xhr) {
+            window.LTBridge.applyStreamHeaders(xhr, c)
+          },
+        })
         hls.on(window.Hls.Events.MANIFEST_PARSED, function () {
           if (mySeq !== seq) return
           els.video.play().catch(function () {
@@ -238,9 +237,10 @@
     if (isFlv) {
       if (window.mpegts && window.mpegts.isSupported()) {
         /* mpegts 的 worker 内 fetch 无法解析相对路径，必须传绝对地址 */
+        /* App 内 worker 无法使用原生 HTTP（会被 CORS 拦截），关闭 worker */
         flv = window.mpegts.createPlayer(
           { type: 'flv', isLive: true, url: new URL(src, location.href).href },
-          { enableWorker: true, lazyLoad: false }
+          { enableWorker: !(window.LTBridge && window.LTBridge.native), lazyLoad: false }
         )
         flv.on(window.mpegts.Events.ERROR, function (_type, detail) {
           if (mySeq !== seq) return
@@ -397,8 +397,7 @@
     }
     if (S.sourceId && S.channelName) {
       try {
-        var data = await api('/api/m3u/channels?source=' + enc(S.sourceId))
-        var list = data.channels || []
+        var list = await window.LTBridge.m3u.channels(S.sourceId)
         var want = S.channelName.trim().toLowerCase()
         list.forEach(function (c) {
           if (!c.url) return

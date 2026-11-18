@@ -4,18 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <title>直播播放 · LibreTV</title>
-    <link rel="manifest" href="/live-agg/manifest.webmanifest" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#06090f" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="LibreTV" />
-    <link rel="apple-touch-icon" href="/live-agg/apple-touch-icon.png" />
-    <link rel="stylesheet" href="/live-agg/player.css" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="stylesheet" href="player.css" />
   </head>
   <body>
     <header class="pbar">
-      <a class="back" href="/live-agg/">← 返回列表</a>
+      <a class="back" href="./">← 返回列表</a>
       <div class="ptitle" id="title">直播播放</div>
       <div class="pact">
         <select id="quality" class="hidden" title="清晰度"></select>
@@ -46,8 +46,10 @@
       </form>
     </div>
 
-    <script src="/live-agg/vendor/hls.min.js"></script>
-    <script src="/live-agg/vendor/mpegts.min.js"></script>
-    <script src="/live-agg/player.js"></script>
+    <script src="vendor/hls.min.js"></script>
+    <script src="vendor/mpegts.min.js"></script>
+    <script src="vendor/capacitor.js"></script>
+    <script src="bridge.js"></script>
+    <script src="player.js"></script>
   </body>
 </html>

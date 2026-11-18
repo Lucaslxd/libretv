@@ -1,0 +1,67 @@
+name: iOS Build
+
+# 没有 Mac 时，用 GitHub 的 macOS runner 编译出未签名 IPA，
+# 再在 Windows 上用 Sideloadly 自签安装到 iPhone。
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/ios-build.yml'
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install npm dependencies
+        working-directory: mobile
+        run: npm install --no-audit --no-fund
+
+      - name: Copy web assets
+        working-directory: mobile
+        run: node copy-web.js
+
+      - name: Sync Capacitor
+        working-directory: mobile
+        run: npx cap sync ios
+
+      - name: CocoaPods install
+        working-directory: mobile/ios/App
+        run: pod install --repo-update
+
+      # 工程里没有共享 scheme，所以用 -target 而不是 -scheme
+      - name: Build unsigned app
+        working-directory: mobile/ios/App
+        run: |
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -target App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -R mobile/ios/App/build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -qry LibreTV-unsigned.ipa Payload
+          ls -lh LibreTV-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LibreTV-unsigned-ipa
+          path: LibreTV-unsigned.ipa
+          retention-days: 14
