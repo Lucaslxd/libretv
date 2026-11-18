@@ -42,7 +42,9 @@ jobs:
         run: |
           echo "server = $APP_SERVER_URL / id = $APP_ID"
           node copy-web.js
-          if [ ! -d ios ]; then npx cap add ios; fi
+          # 仓库中的 ios 工程可能不完整（缺 scheme / workspace），一律重建保证可构建
+          rm -rf ios
+          npx cap add ios
           npx cap sync ios
 
       - name: 允许明文 http（服务器为 http 时才需要）
@@ -68,7 +70,16 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            build
+            build 2>&1 | tee xcodebuild.log
+
+      - name: 上传构建日志（失败时）
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: mobile/ios/App/xcodebuild.log
+          retention-days: 7
+          if-no-files-found: ignore
 
       - name: 打包未签名 IPA
         run: |
