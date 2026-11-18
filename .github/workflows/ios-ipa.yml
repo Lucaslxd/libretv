@@ -7,7 +7,7 @@ on:
       server_url:
         description: 'App 加载的服务器地址（建议 https，末尾带 /）'
         required: true
-        default: 'https://example.com/'
+        default: 'https://ys.zrfme.com/'
       app_id:
         description: 'Bundle ID（同一 Apple ID 下不要重复）'
         required: false
@@ -37,7 +37,7 @@ jobs:
       - name: 生成 iOS 工程并同步
         working-directory: mobile
         env:
-          APP_SERVER_URL: ${{ github.event.inputs.server_url || 'https://example.com/' }}
+          APP_SERVER_URL: ${{ github.event.inputs.server_url || 'https://ys.zrfme.com/' }}
           APP_ID: ${{ github.event.inputs.app_id || 'com.libretv.app' }}
         run: |
           echo "server = $APP_SERVER_URL / id = $APP_ID"

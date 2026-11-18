@@ -6,11 +6,21 @@ import type { CapacitorConfig } from '@capacitor/cli'
  */
 const appId = process.env.APP_ID || 'com.libretv.app'
 
+/**
+ * App 打开的地址：默认指向线上 LibreTV 主站（首页影视 + /live 直播都在服务端）。
+ * 换成自己的部署地址：APP_SERVER_URL=https://xxx npm run sync
+ */
+const serverUrl = process.env.APP_SERVER_URL || 'https://ys.zrfme.com/'
+
 const config: CapacitorConfig = {
   appId,
   appName: 'LibreTV',
   webDir: 'www',
   backgroundColor: '#06090f',
+  server: {
+    url: serverUrl,
+    cleartext: false,
+  },
   android: {
     allowMixedContent: true,
     webContentsDebuggingEnabled: true,
