@@ -45,6 +45,7 @@ final class LTBridgeProxyServer {
                 request: GCDWebServerRequest.self
             ) { [weak self] request, completion in
                 self?.handle(request, completion: completion)
+                return nil
             }
 
             do {
@@ -67,10 +68,10 @@ final class LTBridgeProxyServer {
     /* ---------- 请求处理 ---------- */
 
     private func handle(_ request: GCDWebServerRequest, completion: @escaping GCDWebServerCompletionBlock) {
-        let query = request.query
-        let encoded = (query?["u"] as? String) ?? ""
-        let referer = (query?["r"] as? String) ?? ""
-        let userAgent = (query?["a"] as? String) ?? ""
+        let query = (request.query as? [AnyHashable: Any]) ?? [:]
+        let encoded = (query["u"] as? String) ?? ""
+        let referer = (query["r"] as? String) ?? ""
+        let userAgent = (query["a"] as? String) ?? ""
 
         guard let target = Self.decodeBase64URL(encoded), let url = URL(string: target) else {
             completion(GCDWebServerResponse(statusCode: 400))
@@ -80,7 +81,8 @@ final class LTBridgeProxyServer {
         var upstream = URLRequest(url: url)
         if !referer.isEmpty { upstream.setValue(referer, forHTTPHeaderField: "Referer") }
         if !userAgent.isEmpty { upstream.setValue(userAgent, forHTTPHeaderField: "User-Agent") }
-        if let range = (request.headers?["Range"] as? String), !range.isEmpty {
+        let headers = (request.headers as? [AnyHashable: Any]) ?? [:]
+        if let range = (headers["Range"] as? String), !range.isEmpty {
             upstream.setValue(range, forHTTPHeaderField: "Range")
         }
 
