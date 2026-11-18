@@ -72,8 +72,8 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build 2>&1 | tee xcodebuild.log
 
-      - name: 上传构建日志（失败时）
-        if: failure()
+      - name: 上传构建日志
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: xcodebuild-log
@@ -81,12 +81,21 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      - name: 产物检查
+        run: |
+          ls -la mobile/ios/App/build/Build/Products/ || true
+          ls -la mobile/ios/App/build/Build/Products/Release-iphoneos/ || true
+          du -sh mobile/ios/App/build/Build/Products/Release-iphoneos/App.app || true
+          find mobile/ios/App/build/Build/Products/Release-iphoneos/App.app -maxdepth 1 || true
+
       - name: 打包未签名 IPA
         run: |
           mkdir -p Payload
           cp -R mobile/ios/App/build/Build/Products/Release-iphoneos/App.app Payload/
           zip -qry libretv-unsigned.ipa Payload
           ls -lh libretv-unsigned.ipa
+          unzip -l libretv-unsigned.ipa | head -20
+          du -sh Payload/App.app
 
       - uses: actions/upload-artifact@v4
         with:
