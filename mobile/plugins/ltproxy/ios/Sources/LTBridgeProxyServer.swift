@@ -45,7 +45,6 @@ final class LTBridgeProxyServer {
                 request: GCDWebServerRequest.self
             ) { [weak self] request, completion in
                 self?.handle(request, completion: completion)
-                return nil
             }
 
             do {
